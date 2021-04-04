@@ -1,0 +1,39 @@
+plugins {
+	id 'java'
+}
+
+group = 'com.e4.maclient'
+version = '0.0.1'
+sourceCompatibility = '1.8'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'com.google.auto.service:auto-service:1.0-rc4'
+	annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes (
+                "Manifest-Version": "${version}",
+        )  
+    }
+    from ('./src') { 'META-INF/services/javax.annotation.processing.Processor'}
+}
+
+test {
+	useJUnitPlatform()
+}
