@@ -29,4 +29,13 @@ public class MethodDescriptor extends ElementDescriptor {
     public void addParam(ParameterDescriptor param) {
         this.params.add(param);
     }
+
+    public String getClazzName() {
+        String fullName = this.name.trim();
+        int pos = fullName.lastIndexOf("$");
+        if (pos != -1) {
+            return fullName.substring(0, pos);
+        }
+        return fullName;
+    }
 }

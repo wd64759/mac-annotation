@@ -5,6 +5,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import com.e4.maclient.annotation.Counted;
+import com.e4.maclient.apt.processor.model.AnnotationDescriptor;
+import com.e4.maclient.apt.processor.model.ClassDescriptor;
+import com.e4.maclient.apt.processor.model.MethodDescriptor;
+import com.e4.maclient.apt.processor.model.Pair;
 
 public class CountedProcessor extends MacAbstractProcessor {
 
@@ -17,10 +21,15 @@ public class CountedProcessor extends MacAbstractProcessor {
 
     @Override
     public void process(TypeElement annotation, Element element) {
-        String methodScratch = processMethodAnnotation(annotation, element);
-        System.out.println("annotation:" + annotation.asType());
-        System.out.println("methodScratch:" + methodScratch);
-        System.out.println("description:" + element.getAnnotation(Counted.class));
+        MethodDescriptor mDescriptor = processMethodAnnotation(annotation, element);
+        Counted counted = element.getAnnotation(Counted.class);
+        AnnotationDescriptor annotationDescriptor = new AnnotationDescriptor(Counted.class.getCanonicalName());
+        annotationDescriptor.setValue(new Pair<String>("value", counted.value()));
+        annotationDescriptor.setValue(new Pair<String>("description", counted.description()));
+        annotationDescriptor.setValue(new Pair<Boolean>("recordFailureOnly", counted.recordFailureOnly()));
+        mDescriptor.addAnnotation(annotationDescriptor);
+        ClassDescriptor cDescriptor = RuleCfgGenerator.getClassDescriptor(mDescriptor.getClazzName());
+        cDescriptor.addChild(mDescriptor);
     }
 
     public static CountedProcessor build(ProcessingEnvironment procEnv) {

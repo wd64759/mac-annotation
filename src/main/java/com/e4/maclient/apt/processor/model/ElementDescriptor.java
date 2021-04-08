@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ElementDescriptor implements Serializable {
+public class ElementDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
     protected String name;
     protected List<AnnotationDescriptor> annotations = new ArrayList<>();
     protected List<ElementDescriptor> children;
-    protected ElementDescriptor parent;
+    protected transient ElementDescriptor parent;
 
     public ElementDescriptor(String name) {
         this.name = name;
@@ -22,6 +22,7 @@ public abstract class ElementDescriptor implements Serializable {
 
     public void addChild(ElementDescriptor element) {
         this.children.add(element);
+        element.setParent(this);
     }
 
     public List<ElementDescriptor> getChildren() {
@@ -34,6 +35,14 @@ public abstract class ElementDescriptor implements Serializable {
 
     public ElementDescriptor getParent() {
         return parent;
+    }
+
+    public void addAnnotation(AnnotationDescriptor annotation) {
+        this.annotations.add(annotation);
+    }
+
+    public List<AnnotationDescriptor> getAnnotations() {
+        return this.annotations;
     }
 
 }

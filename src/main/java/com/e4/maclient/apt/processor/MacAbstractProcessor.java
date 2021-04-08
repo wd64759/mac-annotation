@@ -10,9 +10,13 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
+
+import com.e4.maclient.apt.processor.model.MethodDescriptor;
+import com.e4.maclient.apt.processor.model.ParameterDescriptor;
 
 public abstract class MacAbstractProcessor {
 
@@ -26,23 +30,35 @@ public abstract class MacAbstractProcessor {
         this.elementUtils = procEnv.getElementUtils();
     }
 
-    protected String processMethodAnnotation(TypeElement annotation, Element enclosingElement) {
+    protected MethodDescriptor processMethodAnnotation(TypeElement annotation, Element enclosingElement) {
         ExecutableElement executableElement = ExecutableElement.class.cast(enclosingElement);
         String methodPath = getElementName(enclosingElement);
-        List<? extends VariableElement> params = executableElement.getParameters();
-        params.forEach(param->{
-            String paramName = param.getEnclosingElement().getSimpleName().toString();
-            System.out.println("param:" + paramName);
-        });
+        String returnType = executableElement.getReturnType().toString();
+        MethodDescriptor mDescriptor = new MethodDescriptor(methodPath);
+        mDescriptor.setReturnType(returnType);
 
-        // System.out.println(">>annotation:" + annotation.getSimpleName());
-        // System.out.println(">>element:" + methodPath);
-        // System.out.println(">>element Type:" + enclosingElement.getKind());
-        
-        // System.out.println(">>executableElement:" + executableElement.getParameters());
-        System.out.println(">>return:" + executableElement.getReturnType());
-        return String.format("%s:%s", methodPath, "");
-        // printMessage(Kind.NOTE, "processCountedElement annotation", enclosingElement, null);
+        List<? extends VariableElement> params = executableElement.getParameters();
+        params.forEach(param -> {
+            String paramName = param.getSimpleName().toString();
+            Element paramElement = ((DeclaredType) param.asType()).asElement();
+            String paramType = paramElement.getSimpleName().toString();
+            ParameterDescriptor pDescriptor = new ParameterDescriptor(paramName);
+            pDescriptor.setParamType(paramType);
+            mDescriptor.addParam(pDescriptor);
+
+            paramElement.getAnnotationMirrors().stream().forEach(paramAnnotation -> {
+                TypeElement paramAnnotationElement = (TypeElement) paramAnnotation;
+                MacProcessorRegistery.getProcessors().forEach(processor -> {
+                    if (processor.isAcceptable(paramAnnotationElement)) {
+                        processor.process(paramAnnotationElement, paramElement);
+                    }
+                });
+            });
+            // System.out.println(String.format("param name:%s, type:%s, annotations:%s", paramName, paramType,
+                    // param.getAnnotationMirrors()));
+        });
+        // System.out.println(">>return:" + executableElement.getReturnType());
+        return mDescriptor;
     }
 
     public boolean isAcceptable(Element annotation) {
@@ -77,5 +93,6 @@ public abstract class MacAbstractProcessor {
     }
 
     public abstract String getAnnotationName();
+
     public abstract void process(TypeElement annotation, Element element);
 }

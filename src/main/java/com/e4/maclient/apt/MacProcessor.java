@@ -1,7 +1,5 @@
 package com.e4.maclient.apt;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,17 +12,14 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import com.e4.maclient.apt.processor.CountedProcessor;
-import com.e4.maclient.apt.processor.MacAbstractProcessor;
+import com.e4.maclient.apt.processor.MacProcessorRegistery;
+import com.e4.maclient.apt.processor.RuleCfgGenerator;
 
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class MacProcessor extends AbstractProcessor {
 
     private boolean macDisabled = false;
-
-    // all elements marked with MAC annotations
-    private List<MacAbstractProcessor> macAnnotationProcessors = new ArrayList<>();
 
     @Override
     public synchronized void init(ProcessingEnvironment procEnv) {
@@ -33,7 +28,7 @@ public class MacProcessor extends AbstractProcessor {
             macDisabled = true;
             return;
         }
-        this.macAnnotationProcessors.add(CountedProcessor.build(procEnv));
+        MacProcessorRegistery.initProcessors(procEnv);
     }
 
     @Override
@@ -43,13 +38,14 @@ public class MacProcessor extends AbstractProcessor {
             return false;
         if (!roundEnv.processingOver() && !roundEnv.errorRaised()) {
             processRound(annotations, roundEnv);
+            RuleCfgGenerator.buildCfg();
         }
         return false;
     }
 
     private void processRound(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         annotations.forEach(annotation -> {
-            macAnnotationProcessors.forEach(processor -> {
+            MacProcessorRegistery.getProcessors().forEach(processor -> {
                 if (processor.isAcceptable(annotation)) {
                     for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
                         processor.process(annotation, element);
