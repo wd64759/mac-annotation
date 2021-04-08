@@ -1,5 +1,7 @@
 package com.e4.maclient.apt.processor;
 
+import java.util.List;
+
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -7,6 +9,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic.Kind;
@@ -23,21 +26,30 @@ public abstract class MacAbstractProcessor {
         this.elementUtils = procEnv.getElementUtils();
     }
 
-    protected void processMethodAnnotation(Element annotation, Element enclosingElement) {
-        System.out.println(">>annotation:" + annotation.getSimpleName());
-        System.out.println(">>element:" + getElementName(enclosingElement));
-        System.out.println(">>element Type:" + enclosingElement.getKind());
+    protected String processMethodAnnotation(TypeElement annotation, Element enclosingElement) {
         ExecutableElement executableElement = ExecutableElement.class.cast(enclosingElement);
-        System.out.println(">>executableElement:" + executableElement.getParameters());
+        String methodPath = getElementName(enclosingElement);
+        List<? extends VariableElement> params = executableElement.getParameters();
+        params.forEach(param->{
+            String paramName = param.getEnclosingElement().getSimpleName().toString();
+            System.out.println("param:" + paramName);
+        });
+
+        // System.out.println(">>annotation:" + annotation.getSimpleName());
+        // System.out.println(">>element:" + methodPath);
+        // System.out.println(">>element Type:" + enclosingElement.getKind());
+        
+        // System.out.println(">>executableElement:" + executableElement.getParameters());
         System.out.println(">>return:" + executableElement.getReturnType());
-        printMessage(Kind.NOTE, "processCountedElement annotation", enclosingElement, null);
+        return String.format("%s:%s", methodPath, "");
+        // printMessage(Kind.NOTE, "processCountedElement annotation", enclosingElement, null);
     }
 
     public boolean isAcceptable(Element annotation) {
         return annotation.equals(elementUtils.getTypeElement(this.getAnnotationName()));
     }
 
-    private void printMessage(Kind kind, String message, Element element, AnnotationMirror annotation) {
+    protected void printMessage(Kind kind, String message, Element element, AnnotationMirror annotation) {
         this.messager.printMessage(kind, message, element, annotation);
     }
 
@@ -65,5 +77,5 @@ public abstract class MacAbstractProcessor {
     }
 
     public abstract String getAnnotationName();
-    public abstract void process(Element annotation, Element element);
+    public abstract void process(TypeElement annotation, Element element);
 }
