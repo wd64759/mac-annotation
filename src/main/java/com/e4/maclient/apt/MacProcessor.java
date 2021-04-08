@@ -33,11 +33,13 @@ public class MacProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        System.out.println("call>>" + annotations.stream().map(t -> t.getSimpleName()).collect(Collectors.joining(">")));
+        // System.out.println("call>>" + annotations.stream().map(t -> t.getSimpleName()).collect(Collectors.joining(">")));
         if (macDisabled)
             return false;
         if (!roundEnv.processingOver() && !roundEnv.errorRaised()) {
             processRound(annotations, roundEnv);
+        }
+        if(roundEnv.processingOver()) {
             RuleCfgGenerator.buildCfg();
         }
         return false;
