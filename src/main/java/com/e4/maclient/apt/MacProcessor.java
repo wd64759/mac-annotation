@@ -1,7 +1,6 @@
 package com.e4.maclient.apt;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
