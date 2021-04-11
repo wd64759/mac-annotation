@@ -19,6 +19,7 @@ repositories {
 dependencies {
 	implementation 'com.google.auto.service:auto-service:1.0-rc4'
 	compile 'com.google.code.gson:gson:2.8.0'
+	compile 'org.danilopianini:gson-extras:0.2.2'
 	annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
 }
 

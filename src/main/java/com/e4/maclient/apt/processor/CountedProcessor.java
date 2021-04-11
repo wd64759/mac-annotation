@@ -6,7 +6,6 @@ import javax.lang.model.element.TypeElement;
 
 import com.e4.maclient.annotation.Counted;
 import com.e4.maclient.apt.processor.model.AnnotationDescriptor;
-import com.e4.maclient.apt.processor.model.ClassDescriptor;
 import com.e4.maclient.apt.processor.model.MethodDescriptor;
 import com.e4.maclient.apt.processor.model.Pair;
 

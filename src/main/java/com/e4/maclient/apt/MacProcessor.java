@@ -1,8 +1,12 @@
 package com.e4.maclient.apt;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -10,6 +14,9 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import javax.tools.Diagnostic.Kind;
 
 import com.e4.maclient.apt.processor.MacProcessorRegistery;
 import com.e4.maclient.apt.processor.RuleCfgGenerator;
@@ -39,7 +46,8 @@ public class MacProcessor extends AbstractProcessor {
             processRound(annotations, roundEnv);
         }
         if(roundEnv.processingOver()) {
-            RuleCfgGenerator.buildCfg();
+            String configJson = RuleCfgGenerator.buildCfg();
+            generateConfigFile(configJson);
         }
         return false;
     }
@@ -55,5 +63,24 @@ public class MacProcessor extends AbstractProcessor {
             });
         });
     }
+
+    private void generateConfigFile(String configJson) {
+        String resourceFile = "mac/rule_cfg.json";
+        Filer filer = processingEnv.getFiler();
+        try {
+            FileObject fileObject = filer.createResource(StandardLocation.CLASS_OUTPUT, "", resourceFile);
+            OutputStreamWriter out = new OutputStreamWriter(fileObject.openOutputStream());
+            out.write(configJson);
+            out.close();
+        } catch (Exception e) {
+            log("fail to generate monitoring configuration file - " + e);
+        }
+    }
+
+    private void log(String msg) {
+        if (processingEnv.getOptions().containsKey("debug")) {
+          processingEnv.getMessager().printMessage(Kind.NOTE, msg);
+        }
+      }
 
 }
