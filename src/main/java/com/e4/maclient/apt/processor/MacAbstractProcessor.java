@@ -34,7 +34,9 @@ public abstract class MacAbstractProcessor {
         ExecutableElement executableElement = ExecutableElement.class.cast(enclosingElement);
         String methodPath = getElementName(enclosingElement);
         String returnType = executableElement.getReturnType().toString();
-        MethodDescriptor mDescriptor = new MethodDescriptor(methodPath);
+
+        // MethodDescriptor mDescriptor = new MethodDescriptor(methodPath);
+        MethodDescriptor mDescriptor = RuleCfgGenerator.getMethodDescriptor(methodPath);
         mDescriptor.setReturnType(returnType);
 
         List<? extends VariableElement> params = executableElement.getParameters();
@@ -54,11 +56,23 @@ public abstract class MacAbstractProcessor {
                     }
                 });
             });
-            // System.out.println(String.format("param name:%s, type:%s, annotations:%s", paramName, paramType,
-                    // param.getAnnotationMirrors()));
+            System.out.println(String.format("param name:%s, type:%s, annotations:%s", paramName, paramType,
+                    param.getAnnotationMirrors()));
         });
         // System.out.println(">>return:" + executableElement.getReturnType());
         return mDescriptor;
+    }
+
+    protected void processParamAnnotation(TypeElement annotation, Element element) {
+        printMessage(Kind.ERROR, "TODO - processParamAnnotation", element, null);
+    }
+
+    protected void processFieldAnnotation(TypeElement annotation, Element element) {
+        printMessage(Kind.ERROR, "TODO - processFieldAnnotation", element, null);
+    }
+
+    protected void processConstructorAnnotation(TypeElement annotation, Element element) {
+        printMessage(Kind.ERROR, "TODO - processConstructorAnnotation", element, null);
     }
 
     public boolean isAcceptable(Element annotation) {

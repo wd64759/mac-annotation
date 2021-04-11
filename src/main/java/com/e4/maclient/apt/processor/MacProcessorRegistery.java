@@ -18,6 +18,7 @@ public class MacProcessorRegistery {
                 }
                 init = true;
                 macAnnotationProcessors.add(CountedProcessor.build(procEnv));
+                macAnnotationProcessors.add(TagProcessor.build(procEnv));
             }
         }
     }

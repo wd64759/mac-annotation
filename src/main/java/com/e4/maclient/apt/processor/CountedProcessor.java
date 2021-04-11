@@ -28,8 +28,6 @@ public class CountedProcessor extends MacAbstractProcessor {
         annotationDescriptor.setValue(new Pair<String>("description", counted.description()));
         annotationDescriptor.setValue(new Pair<Boolean>("recordFailureOnly", counted.recordFailureOnly()));
         mDescriptor.addAnnotation(annotationDescriptor);
-        ClassDescriptor cDescriptor = RuleCfgGenerator.getClassDescriptor(mDescriptor.getClazzName());
-        cDescriptor.addChild(mDescriptor);
     }
 
     public static CountedProcessor build(ProcessingEnvironment procEnv) {
