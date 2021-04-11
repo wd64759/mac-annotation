@@ -1,7 +1,5 @@
 package com.e4.maclient.apt;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Set;
 
@@ -20,6 +18,7 @@ import javax.tools.Diagnostic.Kind;
 
 import com.e4.maclient.apt.processor.MacProcessorRegistery;
 import com.e4.maclient.apt.processor.RuleCfgGenerator;
+import com.e4.maclient.apt.processor.model.ModuleDescriptor;
 
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -39,13 +38,14 @@ public class MacProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        // System.out.println("call>>" + annotations.stream().map(t -> t.getSimpleName()).collect(Collectors.joining(">")));
+        // System.out.println("call>>" + annotations.stream().map(t ->
+        // t.getSimpleName()).collect(Collectors.joining(">")));
         if (macDisabled)
             return false;
         if (!roundEnv.processingOver() && !roundEnv.errorRaised()) {
             processRound(annotations, roundEnv);
         }
-        if(roundEnv.processingOver()) {
+        if (roundEnv.processingOver() && validateCfg(RuleCfgGenerator.getCfg())) {
             String configJson = RuleCfgGenerator.buildCfg();
             generateConfigFile(configJson);
         }
@@ -64,11 +64,21 @@ public class MacProcessor extends AbstractProcessor {
         });
     }
 
-    private void generateConfigFile(String configJson) {
-        String resourceFile = "mac/rule_cfg.json";
+    /**
+     * validate annotation configuration structure
+     * 
+     * @param md
+     * @return
+     */
+    protected boolean validateCfg(ModuleDescriptor md) {
+        // TODO
+        return true;
+    }
+
+    protected void generateConfigFile(String configJson) {
         Filer filer = processingEnv.getFiler();
         try {
-            FileObject fileObject = filer.createResource(StandardLocation.CLASS_OUTPUT, "", resourceFile);
+            FileObject fileObject = filer.createResource(StandardLocation.CLASS_OUTPUT, "", RuleCfgGenerator.CFG_FILE);
             OutputStreamWriter out = new OutputStreamWriter(fileObject.openOutputStream());
             out.write(configJson);
             out.close();
@@ -79,8 +89,8 @@ public class MacProcessor extends AbstractProcessor {
 
     private void log(String msg) {
         if (processingEnv.getOptions().containsKey("debug")) {
-          processingEnv.getMessager().printMessage(Kind.NOTE, msg);
+            processingEnv.getMessager().printMessage(Kind.NOTE, msg);
         }
-      }
+    }
 
 }

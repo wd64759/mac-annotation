@@ -18,6 +18,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 
 public class RuleCfgGenerator {
+    public static final String CFG_FILE = "mac/rule_cfg.json";
     private static ModuleDescriptor root = new ModuleDescriptor("root");
     private static Set<MethodDescriptor> methodSet = new HashSet<>();
     private static Gson gson = new GsonBuilder()
@@ -61,6 +62,10 @@ public class RuleCfgGenerator {
 
     public static ModuleDescriptor fromCfg(String json) {
         return gson.fromJson(json, ModuleDescriptor.class);
+    }
+
+    public static final ModuleDescriptor getCfg() {
+        return root;
     }
 
     public static void main(String[] args) throws IOException {
