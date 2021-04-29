@@ -9,6 +9,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.SOURCE)
 @Documented
-public @interface Monitor {
-    String module() default "default";
+public @interface MonitorSPI {
+    /**
+     * the service name
+     * @return
+     */
+    String value();
 }

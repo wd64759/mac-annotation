@@ -17,6 +17,8 @@ public class MacProcessorRegistery {
                     return;
                 }
                 init = true;
+                macAnnotationProcessors.add(AvailabilitySPIProcessor.build(procEnv));
+                macAnnotationProcessors.add(LatencySPIProcessor.build(procEnv));
                 macAnnotationProcessors.add(CountedProcessor.build(procEnv));
                 macAnnotationProcessors.add(TagProcessor.build(procEnv));
             }
