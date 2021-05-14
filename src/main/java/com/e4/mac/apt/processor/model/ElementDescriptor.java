@@ -10,7 +10,8 @@ public class ElementDescriptor implements Serializable {
     protected List<AnnotationDescriptor> annotations = new ArrayList<>();
     protected List<ElementDescriptor> children;
     protected transient ElementDescriptor parent;
-
+    /** indentity of the element type decorated  */
+    protected AnnotationType annotationType;
     public ElementDescriptor(String name) {
         this.name = name;
         this.children = new ArrayList<>();
@@ -43,6 +44,10 @@ public class ElementDescriptor implements Serializable {
 
     public List<AnnotationDescriptor> getAnnotations() {
         return this.annotations;
+    }
+
+    public AnnotationType getAnnotationType() {
+        return this.annotationType;
     }
 
 }

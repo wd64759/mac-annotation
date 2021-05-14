@@ -13,6 +13,7 @@ public class ClassDescriptor extends ElementDescriptor {
             this.clazzName = (pos != -1) ? fullName.substring(pos + 1) : fullName;
             this.pkgName = (pos != -1) ? fullName.substring(0, pos) : "";
         }
+        this.annotationType = AnnotationType.CLASS;
     }
 
     public String getClazzName() {

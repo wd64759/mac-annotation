@@ -6,6 +6,7 @@ public class AttributeDescriptor extends ElementDescriptor {
 
     public AttributeDescriptor(String name) {
         super(name);
+        this.annotationType = AnnotationType.ATTRUBTE;
     }
 
     public void setClazzType(String clazzType) {

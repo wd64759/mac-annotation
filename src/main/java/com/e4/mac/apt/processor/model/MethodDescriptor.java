@@ -12,6 +12,7 @@ public class MethodDescriptor extends ElementDescriptor {
     public MethodDescriptor(String name) {
         super(name);
         this.params = new ArrayList<>();
+        this.annotationType = AnnotationType.METHOD;
     }
 
     public void setReturnType(String returnType) {

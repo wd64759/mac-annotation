@@ -8,6 +8,7 @@ public class ParameterDescriptor extends ElementDescriptor {
 
     public ParameterDescriptor(String name) {
         super(name);
+        this.annotationType = AnnotationType.PARAMETER;
     }
 
     public void setParamType(String paramType) {
