@@ -61,7 +61,20 @@ public class RuleCfgGenerator {
     }
 
     public static ModuleDescriptor fromCfg(String json) {
-        return gson.fromJson(json, ModuleDescriptor.class);
+        ModuleDescriptor root = gson.fromJson(json, ModuleDescriptor.class);
+        linkParent(root);
+        return root;
+    }
+
+    /**
+     * Link back parent
+     * @param elem
+     */
+    private static void linkParent(ElementDescriptor elem) {
+        elem.getChildren().forEach(t-> {
+            t.setParent(elem);
+            linkParent(t);
+        });
     }
 
     public static final ModuleDescriptor getCfg() {
