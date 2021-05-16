@@ -1,6 +1,7 @@
 package com.e4.mac.apt.processor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -32,14 +33,16 @@ public abstract class MacAbstractProcessor {
 
     protected MethodDescriptor processMethodAnnotation(TypeElement annotation, Element enclosingElement) {
         ExecutableElement executableElement = ExecutableElement.class.cast(enclosingElement);
-        String methodPath = getElementName(enclosingElement);
-        String returnType = executableElement.getReturnType().toString();
-
-        // MethodDescriptor mDescriptor = new MethodDescriptor(methodPath);
-        MethodDescriptor mDescriptor = RuleCfgGenerator.getMethodDescriptor(methodPath);
-        mDescriptor.setReturnType(returnType);
 
         List<? extends VariableElement> params = executableElement.getParameters();
+        String paramSign = String.format("(%s)", params.stream().map(t->((DeclaredType) t.asType()).asElement().getSimpleName().toString()).collect(Collectors.joining(",")));
+        String methodPath = getElementName(enclosingElement);
+        String methodWithSign = methodPath + paramSign;
+        String returnType = executableElement.getReturnType().toString();
+        
+        MethodDescriptor mDescriptor = RuleCfgGenerator.getMethodDescriptor(methodWithSign);
+        mDescriptor.setReturnType(returnType);
+        
         params.forEach(param -> {
             String paramName = param.getSimpleName().toString();
             Element paramElement = ((DeclaredType) param.asType()).asElement();
